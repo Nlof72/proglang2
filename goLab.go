@@ -29,13 +29,32 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 func progress(wc *WriteCounter, leng uint64) {
 	for {
 		fmt.Println("Download:", wc.Total, "bytes", "with middle speed:", wc.Speed, "bytes/s")
+		pr := float32(wc.Total) / float32(leng) * 100
+		fmt.Println("Current progress bar")
+		if pr < 10 {
+			fmt.Println("[■|                 ]")
+		} else if pr < 20 {
+			fmt.Println("[■|■|               ]")
+		} else if pr < 30 {
+			fmt.Println("[■|■|■|             ]")
+		} else if pr < 40 {
+			fmt.Println("[■|■|■|■|           ]")
+		} else if pr < 50 {
+			fmt.Println("[■|■|■|■|■|         ]")
+		} else if pr < 60 {
+			fmt.Println("[■|■|■|■|■|■|       ]")
+		} else if pr < 70 {
+			fmt.Println("[■|■|■|■|■|■|■|     ]")
+		} else if pr < 80 {
+			fmt.Println("[■|■|■|■|■|■|■|■|   ]")
+		} else if pr < 99 {
+			fmt.Println("[■|■|■|■|■|■|■|■|■| ]")
+		} else {
+			return
+		}
 		time.Sleep(time.Second)
 		wc.Time++
 		wc.Speed = wc.Total / wc.Time
-		if wc.Total == leng {
-			fmt.Println(wc.Total)
-			return
-		}
 	}
 }
 
@@ -72,7 +91,9 @@ func DownloadFile(filepath string, url string) error {
 	today1 := time.Now()
 	dowtime := today1.Sub(today)
 	fmt.Println("Download file:", filepath, "with size:", counter.Total, "bytes", "for:", dowtime, "with middle speed:", counter.Speed, "bytes/s")
-
+	fmt.Println("Current progress bar")
+	fmt.Println("[■|■|■|■|■|■|■|■|■|■]")
+	fmt.Println("-----------------------------------------------------")
 	fmt.Print("\n")
 
 	out.Close()
@@ -87,9 +108,9 @@ func main() {
 	// должно задействовать 4 ядра
 	runtime.GOMAXPROCS(4)
 
-	fileURL := ""
-	fmt.Println("Enter URL adress for downloading")
-	fmt.Scan(&fileURL)
+	fileURL := "http://ovh.net/files/100Mb.dat"
+	// fmt.Println("Enter URL adress for downloading")
+	// fmt.Scan(&fileURL)
 
 	err := DownloadFile(fileURL[strings.LastIndex(fileURL, "/")+1:], fileURL)
 	if err != nil {
