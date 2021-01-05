@@ -91,7 +91,7 @@ func main() {
 	fmt.Println("Enter URL adress for downloading")
 	fmt.Scan(&fileURL)
 
-	err := DownloadFile(fileURL[strings.LastIndex(fileURL, "/")+1:len(fileURL)], fileURL)
+	err := DownloadFile(fileURL[strings.LastIndex(fileURL, "/")+1:], fileURL)
 	if err != nil {
 		panic(err)
 	}
