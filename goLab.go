@@ -39,26 +39,10 @@ func progress(wc *WriteCounter, leng uint64) {
 	}
 }
 
-func main() {
-	// должно задействовать 4 ядра
-	runtime.GOMAXPROCS(4)
-
-	fileURL := ""
-	fmt.Println("Enter URL adress for downloading")
-	fmt.Scan(&fileURL)
-	fmt.Println("Download Started")
-	err := DownloadFile(fileURL[strings.LastIndex(fileURL, "/")+1:len(fileURL)], fileURL)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Download Finished")
-}
-
 // DownloadFile функция загрузки
 func DownloadFile(filepath string, url string) error {
 	today := time.Now()
-
+	fmt.Println("Download Started")
 	out, err := os.Create(filepath + ".tmp")
 	if err != nil {
 		return err
@@ -74,6 +58,8 @@ func DownloadFile(filepath string, url string) error {
 
 	leng := uint64(resp.ContentLength)
 	counter := &WriteCounter{}
+
+	// Вызов функции вывода прогресса
 	go progress(counter, leng)
 
 	readerr := io.TeeReader(resp.Body, counter)
@@ -95,4 +81,20 @@ func DownloadFile(filepath string, url string) error {
 		return err
 	}
 	return nil
+}
+
+func main() {
+	// должно задействовать 4 ядра
+	runtime.GOMAXPROCS(4)
+
+	fileURL := ""
+	fmt.Println("Enter URL adress for downloading")
+	fmt.Scan(&fileURL)
+
+	err := DownloadFile(fileURL[strings.LastIndex(fileURL, "/")+1:len(fileURL)], fileURL)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Download Finished")
 }
